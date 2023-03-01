@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { EMPTY, forkJoin, Observable, of, Subject, throwError } from 'rxjs';
 import { exhaustMap, filter, shareReplay, take } from 'rxjs/operators';
 
+import { NgxsConfig } from '../symbols';
 import { compose } from '../utils/compose';
 import { InternalErrorReporter, ngxsErrorHandler } from './error-handler';
 import { ActionContext, ActionStatus, InternalActions } from '../actions-stream';
@@ -27,7 +28,8 @@ export class InternalDispatcher {
     private _pluginManager: PluginManager,
     private _stateStream: StateStream,
     private _ngxsExecutionStrategy: InternalNgxsExecutionStrategy,
-    private _internalErrorReporter: InternalErrorReporter
+    private _internalErrorReporter: InternalErrorReporter,
+    private _config: NgxsConfig
   ) {}
 
   /**
@@ -39,7 +41,7 @@ export class InternalDispatcher {
     );
 
     return result.pipe(
-      ngxsErrorHandler(this._internalErrorReporter, this._ngxsExecutionStrategy)
+      ngxsErrorHandler(this._config, this._internalErrorReporter, this._ngxsExecutionStrategy)
     );
   }
 
@@ -66,18 +68,20 @@ export class InternalDispatcher {
     const prevState = this._stateStream.getValue();
     const plugins = this._pluginManager.plugins;
 
-    return (compose([
-      ...plugins,
-      (nextState: any, nextAction: any) => {
-        if (nextState !== prevState) {
-          this._stateStream.next(nextState);
+    return (
+      compose([
+        ...plugins,
+        (nextState: any, nextAction: any) => {
+          if (nextState !== prevState) {
+            this._stateStream.next(nextState);
+          }
+          const actionResult$ = this.getActionResultStream(nextAction);
+          actionResult$.subscribe(ctx => this._actions.next(ctx));
+          this._actions.next({ action: nextAction, status: ActionStatus.Dispatched });
+          return this.createDispatchObservable(actionResult$);
         }
-        const actionResult$ = this.getActionResultStream(nextAction);
-        actionResult$.subscribe(ctx => this._actions.next(ctx));
-        this._actions.next({ action: nextAction, status: ActionStatus.Dispatched });
-        return this.createDispatchObservable(actionResult$);
-      }
-    ])(prevState, action) as Observable<any>).pipe(shareReplay());
+      ])(prevState, action) as Observable<any>
+    ).pipe(shareReplay());
   }
 
   private getActionResultStream(action: any): Observable<ActionContext> {

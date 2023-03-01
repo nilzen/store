@@ -148,7 +148,13 @@ describe('Development Mode', () => {
         }
 
         @NgModule({
-          imports: [BrowserModule, NgxsModule.forRoot([MyStore], { developmentMode: true })],
+          imports: [
+            BrowserModule,
+            NgxsModule.forRoot([MyStore], {
+              developmentMode: true,
+              useNgxsErrorHandlingStrategy: false
+            })
+          ],
           providers: [
             {
               provide: ErrorHandler,
@@ -201,7 +207,10 @@ describe('Development Mode', () => {
         @NgModule({
           imports: [
             BrowserModule,
-            NgxsModule.forRoot([], { developmentMode: true }),
+            NgxsModule.forRoot([], {
+              developmentMode: true,
+              useNgxsErrorHandlingStrategy: false
+            }),
             NgxsModule.forFeature([MyStore])
           ],
           providers: [
@@ -404,6 +413,7 @@ describe('Development Mode', () => {
         name: 'counter',
         defaults: { count: 0 }
       })
+      @Injectable()
       class MyStore {
         @Action(Increment)
         mutatingIncrement(
@@ -443,6 +453,7 @@ describe('Development Mode', () => {
         name: 'counter',
         defaults: { count: 0 }
       })
+      @Injectable()
       class MyStore {
         @Action(Start)
         start({ dispatch }: StateContext<StateModel>) {
