@@ -108,7 +108,7 @@ When you define an `@Action`, you can handle the error within the action, and if
   }
 ```
 
-You can return an observable that completes immediately after error has been handled when dealing with streams:
+You can return an observable that completes immediately after the error has been handled when dealing with streams:
 
 ```ts
   @Action(HandledError)
