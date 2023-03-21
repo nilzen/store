@@ -169,9 +169,14 @@ Developers may turn off default NGXS error handling strategy:
 ```ts
 @NgModule({
   imports: [
-    NgxsModule.forRoot({
-      useNgxsErrorHandlingStrategy: false
-    })
+    NgxsModule.forRoot(
+      [
+        /* states */
+      ],
+      {
+        useNgxsErrorHandlingStrategy: false
+      }
+    )
   ]
 })
 export class AppModule {}
