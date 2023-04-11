@@ -1,5 +1,5 @@
 import { InjectionToken, Type } from '@angular/core';
-import { StateToken } from '@ngxs/store';
+import { StateToken, ɵMETA_OPTIONS_KEY } from '@ngxs/store';
 import { StateClass } from '@ngxs/store/internals';
 
 import { StorageEngine } from '../symbols';
@@ -12,7 +12,7 @@ export interface KeyWithExplicitEngine {
 
 /** Determines whether the provided key has the following structure. */
 export function isKeyWithExplicitEngine(key: any): key is KeyWithExplicitEngine {
-  return key != null && !!key.engine;
+  return !!key?.engine;
 }
 
 /**
@@ -21,9 +21,7 @@ export function isKeyWithExplicitEngine(key: any): key is KeyWithExplicitEngine 
  */
 export type StorageKey = string | StateClass | StateToken<any> | KeyWithExplicitEngine;
 
-/** This symbol is used to store the metadata on state classes. */
-const META_OPTIONS_KEY = 'NGXS_OPTIONS_META';
-export function exctractStringKey(storageKey: StorageKey): string {
+export function extractStateName(storageKey: StorageKey): string {
   // Extract the actual key out of the `{ key, engine }` structure.
   if (isKeyWithExplicitEngine(storageKey)) {
     storageKey = storageKey.key;
@@ -32,8 +30,8 @@ export function exctractStringKey(storageKey: StorageKey): string {
   // Given the `storageKey` is a class, for instance, `AuthState`.
   // We should retrieve its metadata and the `name` property.
   // The `name` property might be a string (state name) or a state token.
-  if (storageKey.hasOwnProperty(META_OPTIONS_KEY)) {
-    storageKey = (storageKey as any)[META_OPTIONS_KEY].name;
+  if (storageKey.hasOwnProperty(ɵMETA_OPTIONS_KEY)) {
+    storageKey = (storageKey as any)[ɵMETA_OPTIONS_KEY].name;
   }
 
   return storageKey instanceof StateToken ? storageKey.getName() : <string>storageKey;

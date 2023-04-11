@@ -3,7 +3,10 @@ import {
   ModuleWithProviders,
   PLATFORM_ID,
   InjectionToken,
-  Injector
+  ENVIRONMENT_INITIALIZER,
+  inject,
+  makeEnvironmentProviders,
+  EnvironmentProviders
 } from '@angular/core';
 import { NGXS_PLUGINS } from '@ngxs/store';
 
@@ -14,10 +17,8 @@ import {
 } from './symbols';
 import { NgxsStoragePlugin } from './storage.plugin';
 import { engineFactory, storageOptionsFactory } from './internals';
-import {
-  createFinalStoragePluginOptions,
-  FINAL_NGXS_STORAGE_PLUGIN_OPTIONS
-} from './internals/final-options';
+import { StorageKey } from './internals/storage-key';
+import { ɵNgxsStoragePluginKeysManager } from './internals/keys-manager';
 
 export const USER_OPTIONS = new InjectionToken('USER_OPTIONS');
 
@@ -47,13 +48,21 @@ export class NgxsStoragePluginModule {
           provide: STORAGE_ENGINE,
           useFactory: engineFactory,
           deps: [NGXS_STORAGE_PLUGIN_OPTIONS, PLATFORM_ID]
-        },
-        {
-          provide: FINAL_NGXS_STORAGE_PLUGIN_OPTIONS,
-          useFactory: createFinalStoragePluginOptions,
-          deps: [Injector, NGXS_STORAGE_PLUGIN_OPTIONS]
         }
       ]
     };
   }
+}
+
+// TODO: MUST BE REVISITED AND RENAMED, I DON'T KNOW PROPER NAMING.
+export function provide__feature_storage_state(
+  storageKeys: StorageKey[]
+): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      multi: true,
+      useValue: () => inject(ɵNgxsStoragePluginKeysManager).addKeys(storageKeys)
+    }
+  ]);
 }
