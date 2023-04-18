@@ -1,5 +1,5 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { NgxsModule } from '@ngxs/store';
+import { NgxsModule, NgxsStoreFeature, provideFeatureStore } from '@ngxs/store';
 
 import { RouterState } from './router.state';
 import { DefaultRouterStateSerializer, RouterStateSerializer } from './serializer';
@@ -30,4 +30,17 @@ export class NgxsRouterPluginModule {
       ]
     };
   }
+}
+
+export function withNgxsRouterPlugin(options?: NgxsRouterPluginOptions): NgxsStoreFeature {
+  return [
+    provideFeatureStore([RouterState]),
+    { provide: USER_OPTIONS, useValue: options },
+    {
+      provide: NGXS_ROUTER_PLUGIN_OPTIONS,
+      useFactory: createRouterPluginOptions,
+      deps: [USER_OPTIONS]
+    },
+    { provide: RouterStateSerializer, useClass: DefaultRouterStateSerializer }
+  ];
 }

@@ -6,9 +6,9 @@ import { DispatchOutsideZoneNgxsExecutionStrategy } from './dispatch-outside-zon
 /**
  * The strategy that might be provided by users through `options.executionStrategy`.
  */
-export const USER_PROVIDED_NGXS_EXECUTION_STRATEGY = new InjectionToken<
+export const CUSTOM_NGXS_EXECUTION_STRATEGY = new InjectionToken<
   Type<NgxsExecutionStrategy> | undefined
->('USER_PROVIDED_NGXS_EXECUTION_STRATEGY');
+>('CUSTOM_NGXS_EXECUTION_STRATEGY');
 
 /*
  * Internal execution strategy injection token
@@ -19,7 +19,7 @@ export const NGXS_EXECUTION_STRATEGY = new InjectionToken<NgxsExecutionStrategy>
     providedIn: 'root',
     factory: () => {
       const injector = inject(INJECTOR);
-      const executionStrategy = injector.get(USER_PROVIDED_NGXS_EXECUTION_STRATEGY);
+      const executionStrategy = injector.get(CUSTOM_NGXS_EXECUTION_STRATEGY);
       return executionStrategy
         ? injector.get(executionStrategy)
         : injector.get(

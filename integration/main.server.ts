@@ -6,5 +6,5 @@ if (environment.production) {
   enableProdMode();
 }
 
-export { AppServerModule } from './app/app.server.module';
-export { renderModuleFactory } from '@angular/platform-server';
+export { AppComponent } from './app/app.component';
+export { APP_ID_VALUE, SHARED_PLATFORM_PROVIDERS } from './shared-platform-providers';

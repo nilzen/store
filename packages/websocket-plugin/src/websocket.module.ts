@@ -1,4 +1,5 @@
 import { NgModule, ModuleWithProviders, APP_INITIALIZER, InjectionToken } from '@angular/core';
+import { NgxsStoreFeature } from '@ngxs/store';
 
 import { WebSocketHandler } from './websocket-handler';
 import { NgxsWebsocketPluginOptions, NGXS_WEBSOCKET_OPTIONS, noop } from './symbols';
@@ -47,4 +48,23 @@ export class NgxsWebsocketPluginModule {
       ]
     };
   }
+}
+
+export function withNgxsWebSocketPlugin(
+  options?: NgxsWebsocketPluginOptions
+): NgxsStoreFeature {
+  return [
+    { provide: USER_OPTIONS, useValue: options },
+    {
+      provide: NGXS_WEBSOCKET_OPTIONS,
+      useFactory: websocketOptionsFactory,
+      deps: [USER_OPTIONS]
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: noop,
+      deps: [WebSocketHandler],
+      multi: true
+    }
+  ];
 }

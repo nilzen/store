@@ -1,5 +1,5 @@
 import { NgModule, ModuleWithProviders, InjectionToken } from '@angular/core';
-import { NGXS_PLUGINS } from '@ngxs/store';
+import { NGXS_PLUGINS, NgxsStoreFeature, withNgxsPlugin } from '@ngxs/store';
 
 import { NgxsDevtoolsOptions, NGXS_DEVTOOLS_OPTIONS } from './symbols';
 import { NgxsReduxDevtoolsPlugin } from './devtools.plugin';
@@ -38,4 +38,19 @@ export class NgxsReduxDevtoolsPluginModule {
       ]
     };
   }
+}
+
+export function withNgxsReduxDevtoolsPlugin(options?: NgxsDevtoolsOptions): NgxsStoreFeature {
+  return [
+    withNgxsPlugin(NgxsReduxDevtoolsPlugin),
+    {
+      provide: USER_OPTIONS,
+      useValue: options
+    },
+    {
+      provide: NGXS_DEVTOOLS_OPTIONS,
+      useFactory: devtoolsOptionsFactory,
+      deps: [USER_OPTIONS]
+    }
+  ];
 }

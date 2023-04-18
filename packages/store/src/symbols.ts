@@ -9,9 +9,14 @@ import { NgxsExecutionStrategy } from './execution/symbols';
 import { SharedSelectorOptions } from './internal/internals';
 import { StateToken } from './state-token/state-token';
 
+// A token used to resolve to states provided in the root context (`forRoot`).
 export const ROOT_STATE_TOKEN = new InjectionToken<any>('ROOT_STATE_TOKEN');
+// A token used to resolve to states provided on the feature level (`forFeature`).
 export const FEATURE_STATE_TOKEN = new InjectionToken<any>('FEATURE_STATE_TOKEN');
+// A token used to resolve to custom NGXS plugins.
 export const NGXS_PLUGINS = new InjectionToken('NGXS_PLUGINS');
+// A token used to resolve to options provided in the root context (`forRoot`).
+export const NGXS_OPTIONS = new InjectionToken<NgxsModuleOptions>('NGXS_OPTIONS');
 
 export const META_KEY = 'NGXS_META';
 export const META_OPTIONS_KEY = 'NGXS_OPTIONS_META';
